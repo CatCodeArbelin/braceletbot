@@ -25,7 +25,7 @@ def set_notification_service(service: NotificationService) -> None:
 
 
 def _build_order(manager: DialogManager, payment_type: str) -> Order:
-    product_id = manager.dialog_data.get("product_id")
+    product_id = manager.start_data.get("product_id")
     product = next((p for p in PRODUCTS["bracelets"] if p["id"] == product_id), None)
     if product is None:
         raise ValueError("Не удалось определить выбранный товар")
@@ -35,8 +35,8 @@ def _build_order(manager: DialogManager, payment_type: str) -> Order:
         raise ValueError("Не удалось определить данные пользователя")
 
     user = event.from_user
-    delivery_type = manager.dialog_data.get("delivery_method")
-    delivery_data = manager.dialog_data.get("delivery_data")
+    delivery_type = manager.start_data.get("delivery_method")
+    delivery_data = manager.start_data.get("delivery_data")
     if not delivery_type or not delivery_data:
         raise ValueError("Не заполнены данные доставки")
 
@@ -81,11 +81,11 @@ async def set_sbp(_, __, manager: DialogManager):
 
 
 async def back_to_delivery_input(_, __, manager: DialogManager):
-    await manager.switch_to(DeliverySG.delivery_input)
+    await manager.start(DeliverySG.delivery_input, data={"product_id": manager.start_data.get("product_id")})
 
 
 async def to_start(_, __, manager: DialogManager):
-    await manager.switch_to(MainMenuSG.start)
+    await manager.start(MainMenuSG.start)
 
 
 payment_dialog = Dialog(

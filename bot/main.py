@@ -29,7 +29,14 @@ async def start_handler(message: Message, dialog_manager: DialogManager):
 async def delivery_input_handler(message: Message, dialog_manager: DialogManager):
     # Сохраняем данные доставки и переводим пользователя к оплате.
     dialog_manager.dialog_data["delivery_data"] = message.text or ""
-    await dialog_manager.switch_to(PaymentSG.payment)
+    await dialog_manager.start(
+        PaymentSG.payment,
+        data={
+            "product_id": dialog_manager.start_data.get("product_id"),
+            "delivery_method": dialog_manager.dialog_data.get("delivery_method"),
+            "delivery_data": dialog_manager.dialog_data.get("delivery_data"),
+        },
+    )
 
 
 async def fallback_handler(message: Message):
