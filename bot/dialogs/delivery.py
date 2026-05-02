@@ -20,7 +20,7 @@ async def back_to_product(_, __, manager: DialogManager):
     await manager.switch_to(MainMenuSG.product)
 
 
-async def back_to_delivery(_, __, manager: DialogManager):
+async def back_delivery(_, __, manager: DialogManager):
     await manager.switch_to(MainMenuSG.delivery)
 
 
@@ -41,7 +41,7 @@ delivery_dialog = Dialog(
     ),
     Window(
         Format("{delivery_input_text}"),
-        Button(Const("назад"), id="back_delivery", on_click=back_to_delivery),
+        Button(Const("назад"), id="back_delivery", on_click=back_delivery),
         state=MainMenuSG.delivery_input,
         getter=delivery_input_getter,
     ),
