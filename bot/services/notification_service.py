@@ -23,20 +23,20 @@ class NotificationService:
 
         return (
             "Новый заказ 💖\n\n"
-            "👤 Пользователь:\n"
+            "Пользователь:\n"
             f"• ID: {order.user_id}\n"
             f"• Username: {username}\n"
             f"• Имя: {first_name}\n\n"
-            "📦 Товар:\n"
+            "Товар:\n"
             f"• {order.product_name}\n"
             f"• Цена: {order.product_price_new}₽\n\n"
-            "🚚 Доставка:\n"
+            "Доставка:\n"
             f"• Способ: {order.delivery_type}\n"
             "• Данные:\n"
             f"{delivery_data_formatted}\n\n"
-            "💳 Оплата:\n"
+            "Оплата:\n"
             f"• {order.payment_type}\n\n"
-            "🕒 Дата:\n"
+            "Дата:\n"
             f"• {order.created_at}"
         )
 
