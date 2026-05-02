@@ -11,7 +11,10 @@ async def product_getter(dialog_manager: DialogManager, **_):
     product = next(p for p in PRODUCTS["bracelets"] if p["id"] == product_id)
     return {
         "card": TEXTS["product_card"].format(
-            name=product["name"], price=product["price"], description=product["description"]
+            name=product["name"],
+            price_old=product["price_old"],
+            price_new=product["price_new"],
+            description=product["description"]
         )
     }
 
