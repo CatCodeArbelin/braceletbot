@@ -6,15 +6,19 @@ from bot.config import PRODUCTS, TEXTS
 from bot.dialogs.states import MainMenuSG
 
 
+def _format_price(value: int) -> str:
+    return f"{value:,}".replace(",", " ")
+
+
 async def product_getter(dialog_manager: DialogManager, **_):
     product_id = dialog_manager.dialog_data.get("product_id")
     product = next(p for p in PRODUCTS["bracelets"] if p["id"] == product_id)
     return {
         "card": TEXTS["product_card"].format(
             name=product["name"],
-            price_old=product["price_old"],
-            price_new=product["price_new"],
-            description=product["description"]
+            price_old=_format_price(product["price_old"]),
+            price_new=_format_price(product["price_new"]),
+            description=product["description"],
         )
     }
 
