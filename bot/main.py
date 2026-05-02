@@ -7,7 +7,7 @@ from aiogram.types import Message
 from aiogram_dialog import DialogManager, setup_dialogs
 
 from bot.config import TEXTS, load_settings
-from bot.database import InMemoryDatabase
+from bot.database import SQLiteDatabase
 from bot.dialogs import (
     catalog_dialog,
     delivery_dialog,
@@ -15,6 +15,7 @@ from bot.dialogs import (
     payment_dialog,
     product_dialog,
 )
+from bot.dialogs.payment import set_order_service
 from bot.dialogs.states import MainMenuSG
 from bot.services.order_service import OrderService
 
@@ -24,15 +25,9 @@ async def start_handler(message: Message, dialog_manager: DialogManager):
     await dialog_manager.start(MainMenuSG.start)
 
 
-async def delivery_input_handler(message: Message, dialog_manager: DialogManager, order_service: OrderService):
+async def delivery_input_handler(message: Message, dialog_manager: DialogManager):
     # Сохраняем данные доставки и переводим пользователя к оплате.
     dialog_manager.dialog_data["delivery_data"] = message.text or ""
-    order_payload = {
-        "product_id": dialog_manager.dialog_data.get("product_id"),
-        "delivery_method": dialog_manager.dialog_data.get("delivery_method"),
-        "delivery_data": dialog_manager.dialog_data.get("delivery_data"),
-    }
-    order_service.create_order(order_payload)
     await dialog_manager.switch_to(MainMenuSG.payment)
 
 
@@ -50,15 +45,12 @@ async def main():
     dp = Dispatcher()
     router = Router()
 
-    db = InMemoryDatabase()
+    db = SQLiteDatabase()
     order_service = OrderService(db)
+    set_order_service(order_service)
 
     router.message.register(start_handler, CommandStart())
-    router.message.register(
-        lambda m, dm: delivery_input_handler(m, dm, order_service),
-        MainMenuSG.delivery_input,
-        F.text,
-    )
+    router.message.register(delivery_input_handler, MainMenuSG.delivery_input, F.text)
     router.message.register(fallback_handler)
 
     dp.include_router(router)
