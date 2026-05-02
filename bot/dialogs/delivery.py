@@ -8,25 +8,25 @@ from bot.config import (
     DELIVERY_POST_INPUT_TEXT,
     PRODUCTS,
 )
-from bot.dialogs.states import MainMenuSG
+from bot.dialogs.states import DeliverySG, ProductSG
 
 
 async def set_post(_, __, manager: DialogManager):
     manager.dialog_data["delivery_method"] = "Почта"
-    await manager.switch_to(MainMenuSG.delivery_input)
+    await manager.switch_to(DeliverySG.delivery_input)
 
 
 async def set_cdek(_, __, manager: DialogManager):
     manager.dialog_data["delivery_method"] = "СДЭК"
-    await manager.switch_to(MainMenuSG.delivery_input)
+    await manager.switch_to(DeliverySG.delivery_input)
 
 
 async def back_to_product(_, __, manager: DialogManager):
-    await manager.switch_to(MainMenuSG.product)
+    await manager.switch_to(ProductSG.product)
 
 
 async def back_delivery(_, __, manager: DialogManager):
-    await manager.switch_to(MainMenuSG.delivery)
+    await manager.switch_to(DeliverySG.delivery)
 
 
 async def delivery_getter(dialog_manager: DialogManager, **_kwargs):
@@ -49,13 +49,13 @@ delivery_dialog = Dialog(
         Button(Const("Почта"), id="delivery_post", on_click=set_post),
         Button(Const("СДЭК"), id="delivery_cdek", on_click=set_cdek),
         Button(Const("назад"), id="back_product", on_click=back_to_product),
-        state=MainMenuSG.delivery,
+        state=DeliverySG.delivery,
         getter=delivery_getter,
     ),
     Window(
         Format("{delivery_input_text}"),
         Button(Const("назад"), id="back_delivery", on_click=back_delivery),
-        state=MainMenuSG.delivery_input,
+        state=DeliverySG.delivery_input,
         getter=delivery_input_getter,
     ),
 )

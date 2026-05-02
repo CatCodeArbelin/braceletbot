@@ -16,7 +16,7 @@ from bot.dialogs import (
     product_dialog,
 )
 from bot.dialogs.payment import set_notification_service, set_order_service
-from bot.dialogs.states import MainMenuSG
+from bot.dialogs.states import DeliverySG, MainMenuSG, PaymentSG
 from bot.services.notification_service import NotificationService
 from bot.services.order_service import OrderService
 
@@ -29,7 +29,7 @@ async def start_handler(message: Message, dialog_manager: DialogManager):
 async def delivery_input_handler(message: Message, dialog_manager: DialogManager):
     # Сохраняем данные доставки и переводим пользователя к оплате.
     dialog_manager.dialog_data["delivery_data"] = message.text or ""
-    await dialog_manager.switch_to(MainMenuSG.payment)
+    await dialog_manager.switch_to(PaymentSG.payment)
 
 
 async def fallback_handler(message: Message):
@@ -53,7 +53,7 @@ async def main():
     set_notification_service(notification_service)
 
     router.message.register(start_handler, CommandStart())
-    router.message.register(delivery_input_handler, MainMenuSG.delivery_input, F.text)
+    router.message.register(delivery_input_handler, DeliverySG.delivery_input, F.text)
     router.message.register(fallback_handler)
 
     dp.include_router(router)
