@@ -15,7 +15,10 @@ TEXTS = {
     ),
     "main_menu": "Главное меню:",
     "catalog_title": "Выбери браслет:",
-    "chokers_stub": "Скоро здесь появятся чокеры ✨",
+    "chokers_stub": (
+        "Скоро здесь появятся чокеры ✨\n"
+        "Следите за обновлениями — а пока выберите браслеты в каталоге 💖"
+    ),
     "product_card": "{name}\n{price_old} ₽ → {price_new} ₽\n\n{description}",
     "choose_delivery": "Выбери способ доставки:",
     "enter_delivery_data_post": (
