@@ -3,7 +3,7 @@ from aiogram_dialog.widgets.kbd import Button
 from aiogram_dialog.widgets.text import Format
 
 from bot.config import PRODUCTS, TEXTS
-from bot.dialogs.states import MainMenuSG
+from bot.dialogs.states import CatalogSG, DeliverySG, ProductSG
 
 
 def _format_price(value: int) -> str:
@@ -24,11 +24,11 @@ async def product_getter(dialog_manager: DialogManager, **_):
 
 
 async def to_delivery(_, __, manager: DialogManager):
-    await manager.switch_to(MainMenuSG.delivery)
+    await manager.switch_to(DeliverySG.delivery)
 
 
 async def back_to_catalog(_, __, manager: DialogManager):
-    await manager.switch_to(MainMenuSG.catalog)
+    await manager.switch_to(CatalogSG.catalog)
 
 
 product_dialog = Dialog(
@@ -36,7 +36,7 @@ product_dialog = Dialog(
         Format("{card}"),
         Button(Format("заказать"), id="order", on_click=to_delivery),
         Button(Format("назад"), id="back_catalog", on_click=back_to_catalog),
-        state=MainMenuSG.product,
+        state=ProductSG.product,
         getter=product_getter,
     )
 )

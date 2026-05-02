@@ -3,12 +3,12 @@ from aiogram_dialog.widgets.kbd import Button
 from aiogram_dialog.widgets.text import Const, Format
 
 from bot.config import TEXTS
-from bot.dialogs.states import MainMenuSG
+from bot.dialogs.states import CatalogSG, MainMenuSG
 
 
 async def on_bracelets_click(_, __, manager: DialogManager):
     # Переходим в каталог браслетов.
-    await manager.switch_to(MainMenuSG.catalog)
+    await manager.switch_to(CatalogSG.catalog)
 
 
 async def on_chokers_click(_, __, manager: DialogManager):

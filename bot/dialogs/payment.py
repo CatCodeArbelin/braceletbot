@@ -5,7 +5,7 @@ from aiogram_dialog.widgets.kbd import Button
 from aiogram_dialog.widgets.text import Const
 
 from bot.config import PRODUCTS, TEXTS
-from bot.dialogs.states import MainMenuSG
+from bot.dialogs.states import DeliverySG, MainMenuSG, PaymentSG
 from bot.models import Order
 from bot.services.notification_service import NotificationService
 from bot.services.order_service import OrderService
@@ -69,7 +69,7 @@ async def _save_and_finish(manager: DialogManager, payment_type: str) -> None:
         return
 
     manager.dialog_data["payment_method"] = payment_type
-    await manager.switch_to(MainMenuSG.done)
+    await manager.switch_to(PaymentSG.done)
 
 
 async def set_card(_, __, manager: DialogManager):
@@ -81,7 +81,7 @@ async def set_sbp(_, __, manager: DialogManager):
 
 
 async def back_to_delivery_input(_, __, manager: DialogManager):
-    await manager.switch_to(MainMenuSG.delivery_input)
+    await manager.switch_to(DeliverySG.delivery_input)
 
 
 async def to_start(_, __, manager: DialogManager):
@@ -94,11 +94,11 @@ payment_dialog = Dialog(
         Button(Const("Картой"), id="pay_card", on_click=set_card),
         Button(Const("СБП"), id="pay_sbp", on_click=set_sbp),
         Button(Const("Назад"), id="back_delivery_input", on_click=back_to_delivery_input),
-        state=MainMenuSG.payment,
+        state=PaymentSG.payment,
     ),
     Window(
         Const(TEXTS["order_done"]),
         Button(Const("Вернуться в начало"), id="back_start", on_click=to_start),
-        state=MainMenuSG.done,
+        state=PaymentSG.done,
     ),
 )
