@@ -15,21 +15,28 @@ class NotificationService:
     def format_order_message(order: Order) -> str:
         username = f"@{order.username}" if order.username else "—"
         first_name = order.first_name or "—"
+
+        delivery_data = order.delivery_data or "—"
+        delivery_data_formatted = "\n".join(
+            f"  {line}" for line in str(delivery_data).splitlines()
+        )
+
         return (
-            "🛍 Новый заказ\n\n"
+            "Новый заказ 💖\n\n"
             "👤 Пользователь:\n"
             f"• ID: {order.user_id}\n"
             f"• Username: {username}\n"
             f"• Имя: {first_name}\n\n"
             "📦 Товар:\n"
             f"• {order.product_name}\n"
-            f"• Цена: {order.product_price_new} ₽\n\n"
+            f"• Цена: {order.product_price_new}₽\n\n"
             "🚚 Доставка:\n"
             f"• Способ: {order.delivery_type}\n"
-            f"• Данные: {order.delivery_data}\n\n"
+            "• Данные:\n"
+            f"{delivery_data_formatted}\n\n"
             "💳 Оплата:\n"
             f"• {order.payment_type}\n\n"
-            "🕒 Дата заказа:\n"
+            "🕒 Дата:\n"
             f"• {order.created_at}"
         )
 
