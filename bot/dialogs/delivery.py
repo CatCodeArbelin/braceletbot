@@ -22,7 +22,7 @@ async def set_cdek(_, __, manager: DialogManager):
 
 
 async def back_to_product(_, __, manager: DialogManager):
-    await manager.switch_to(ProductSG.product)
+    await manager.start(ProductSG.product, data={"product_id": manager.start_data.get("product_id")})
 
 
 async def back_delivery(_, __, manager: DialogManager):
@@ -30,7 +30,7 @@ async def back_delivery(_, __, manager: DialogManager):
 
 
 async def delivery_getter(dialog_manager: DialogManager, **_kwargs):
-    product_id = dialog_manager.dialog_data.get("product_id")
+    product_id = dialog_manager.start_data.get("product_id")
     product = next((p for p in PRODUCTS["bracelets"] if p["id"] == product_id), None)
     product_name = product["name"] if product is not None else "выбранный товар"
     return {"delivery_choice_text": DELIVERY_CHOICE_TEXT.format(product_name=product_name)}

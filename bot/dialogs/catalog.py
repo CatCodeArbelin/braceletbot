@@ -11,22 +11,19 @@ def _product_name(idx: int) -> str:
 
 
 async def open_product_0(_, __, manager: DialogManager):
-    manager.dialog_data["product_id"] = PRODUCTS["bracelets"][0]["id"]
-    await manager.switch_to(ProductSG.product)
+    await manager.start(ProductSG.product, data={"product_id": PRODUCTS["bracelets"][0]["id"]})
 
 
 async def open_product_1(_, __, manager: DialogManager):
-    manager.dialog_data["product_id"] = PRODUCTS["bracelets"][1]["id"]
-    await manager.switch_to(ProductSG.product)
+    await manager.start(ProductSG.product, data={"product_id": PRODUCTS["bracelets"][1]["id"]})
 
 
 async def open_product_2(_, __, manager: DialogManager):
-    manager.dialog_data["product_id"] = PRODUCTS["bracelets"][2]["id"]
-    await manager.switch_to(ProductSG.product)
+    await manager.start(ProductSG.product, data={"product_id": PRODUCTS["bracelets"][2]["id"]})
 
 
 async def back_to_main(_, __, manager: DialogManager):
-    await manager.switch_to(MainMenuSG.start)
+    await manager.start(MainMenuSG.start)
 
 
 catalog_dialog = Dialog(

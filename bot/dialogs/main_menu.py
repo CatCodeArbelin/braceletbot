@@ -8,7 +8,7 @@ from bot.dialogs.states import CatalogSG, MainMenuSG
 
 async def on_bracelets_click(_, __, manager: DialogManager):
     # Переходим в каталог браслетов.
-    await manager.switch_to(CatalogSG.catalog)
+    await manager.start(CatalogSG.catalog)
 
 
 async def on_chokers_click(_, __, manager: DialogManager):
