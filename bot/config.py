@@ -15,9 +15,13 @@ TEXTS = {
     "chokers_stub": "Скоро здесь появятся чокеры ✨",
     "product_card": "{name}\n{price_old} ₽ → {price_new} ₽\n\n{description}",
     "choose_delivery": "Выбери способ доставки:",
-    "enter_delivery_data": (
+    "enter_delivery_data_post": (
         "Отправь данные доставки одним сообщением.\n"
         "Например: ФИО, телефон, индекс, город, улица, дом, квартира"
+    ),
+    "enter_delivery_data_cdek": (
+        "Отправь данные доставки одним сообщением.\n"
+        "Например: ФИО, телефон, город, адрес ПВЗ СДЭК"
     ),
     "choose_payment": "Выбери способ оплаты:",
     "order_done": (
