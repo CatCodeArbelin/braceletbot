@@ -5,7 +5,7 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class Settings:
     bot_token: str
-    admin_chat_id: int
+    admin_chat_id: int | None
 
 
 TEXTS = {
@@ -63,12 +63,11 @@ def load_settings() -> Settings:
 
     if not bot_token:
         raise ValueError("Переменная окружения BOT_TOKEN не задана")
-    if not admin_chat_id_raw:
-        raise ValueError("Переменная окружения ADMIN_CHAT_ID не задана")
-
-    try:
-        admin_chat_id = int(admin_chat_id_raw)
-    except ValueError as exc:
-        raise ValueError("ADMIN_CHAT_ID должен быть целым числом") from exc
+    admin_chat_id: int | None = None
+    if admin_chat_id_raw:
+        try:
+            admin_chat_id = int(admin_chat_id_raw)
+        except ValueError as exc:
+            raise ValueError("ADMIN_CHAT_ID должен быть целым числом") from exc
 
     return Settings(bot_token=bot_token, admin_chat_id=admin_chat_id)

@@ -15,8 +15,9 @@ from bot.dialogs import (
     payment_dialog,
     product_dialog,
 )
-from bot.dialogs.payment import set_order_service
+from bot.dialogs.payment import set_notification_service, set_order_service
 from bot.dialogs.states import MainMenuSG
+from bot.services.notification_service import NotificationService
 from bot.services.order_service import OrderService
 
 
@@ -47,7 +48,9 @@ async def main():
 
     db = SQLiteDatabase()
     order_service = OrderService(db)
+    notification_service = NotificationService(settings.admin_chat_id)
     set_order_service(order_service)
+    set_notification_service(notification_service)
 
     router.message.register(start_handler, CommandStart())
     router.message.register(delivery_input_handler, MainMenuSG.delivery_input, F.text)
