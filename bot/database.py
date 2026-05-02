@@ -5,7 +5,7 @@ from pathlib import Path
 class SQLiteDatabase:
     """SQLite БД для хранения заказов."""
 
-    def __init__(self, db_path: str = "/data/orders.db") -> None:
+    def __init__(self, db_path: str = "/app/data/orders.db") -> None:
         self.db_path = Path(db_path)
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self._init_db()
