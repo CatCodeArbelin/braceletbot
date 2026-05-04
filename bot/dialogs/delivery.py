@@ -81,6 +81,36 @@ async def to_payment(_, __, manager: DialogManager):
     )
 
 
+async def confirm_full_name_yes(_, __, manager: DialogManager):
+    await manager.event.answer("Подтвердить ФИО и перейти к вводу телефона?", show_alert=True)
+    await manager.switch_to(DeliverySG.phone_input)
+
+
+async def confirm_full_name_no(_, __, manager: DialogManager):
+    await manager.event.answer("Вернуться к редактированию ФИО?", show_alert=True)
+    await manager.switch_to(DeliverySG.full_name_input)
+
+
+async def confirm_phone_yes(_, __, manager: DialogManager):
+    await manager.event.answer("Подтвердить телефон и перейти к вводу адреса?", show_alert=True)
+    await manager.switch_to(DeliverySG.address_input)
+
+
+async def confirm_phone_no(_, __, manager: DialogManager):
+    await manager.event.answer("Вернуться к редактированию телефона?", show_alert=True)
+    await manager.switch_to(DeliverySG.phone_input)
+
+
+async def confirm_address_yes(_, __, manager: DialogManager):
+    await manager.event.answer("Подтвердить адрес и перейти к оплате?", show_alert=True)
+    await to_payment(_, __, manager)
+
+
+async def confirm_address_no(_, __, manager: DialogManager):
+    await manager.event.answer("Вернуться к редактированию адреса?", show_alert=True)
+    await manager.switch_to(DeliverySG.address_input)
+
+
 async def delivery_getter(dialog_manager: DialogManager, **_kwargs):
     product_id = dialog_manager.start_data.get("product_id")
     product = next((p for p in PRODUCTS["bracelets"] if p["id"] == product_id), None)
@@ -111,8 +141,8 @@ delivery_dialog = Dialog(
     ),
     Window(
         Format("Вы ввели ФИО: \"{full_name}\"\nВсе верно?"),
-        Button(Const("Да"), id="full_name_yes", on_click=to_phone_input),
-        Button(Const("Нет"), id="full_name_no", on_click=to_full_name_input),
+        Button(Const("Подтвердить (Да)"), id="full_name_yes", on_click=confirm_full_name_yes),
+        Button(Const("Нет, изменить"), id="full_name_no", on_click=confirm_full_name_no),
         Button(Const("назад"), id="back_delivery_2", on_click=back_delivery),
         state=DeliverySG.full_name_confirm,
         getter=delivery_getter,
@@ -125,8 +155,8 @@ delivery_dialog = Dialog(
     ),
     Window(
         Format("Вы ввели телефон: \"{phone}\"\nВсе верно?"),
-        Button(Const("Да"), id="phone_yes", on_click=to_address_input),
-        Button(Const("Нет"), id="phone_no", on_click=to_phone_input),
+        Button(Const("Подтвердить (Да)"), id="phone_yes", on_click=confirm_phone_yes),
+        Button(Const("Нет, изменить"), id="phone_no", on_click=confirm_phone_no),
         Button(Const("назад"), id="back_phone_confirm", on_click=to_full_name_confirm),
         state=DeliverySG.phone_confirm,
         getter=delivery_getter,
@@ -139,8 +169,8 @@ delivery_dialog = Dialog(
     ),
     Window(
         Format("Способ доставки: {delivery_method}\nВы ввели адрес: \"{address}\"\nВсе верно?"),
-        Button(Const("Да"), id="address_yes", on_click=to_payment),
-        Button(Const("Нет"), id="address_no", on_click=to_address_input),
+        Button(Const("Подтвердить (Да)"), id="address_yes", on_click=confirm_address_yes),
+        Button(Const("Нет, изменить"), id="address_no", on_click=confirm_address_no),
         Button(Const("назад"), id="back_address_confirm", on_click=to_phone_confirm),
         state=DeliverySG.address_confirm,
         getter=delivery_getter,
