@@ -2,23 +2,20 @@ from aiogram_dialog import Dialog, DialogManager, Window
 from aiogram_dialog.widgets.kbd import Button
 from aiogram_dialog.widgets.text import Const, Format
 
-from bot.config import (
-    DELIVERY_CDEK_INPUT_TEXT,
-    DELIVERY_CHOICE_TEXT,
-    DELIVERY_POST_INPUT_TEXT,
-    PRODUCTS,
-)
-from bot.dialogs.states import DeliverySG, ProductSG
+from bot.config import DELIVERY_CHOICE_TEXT, PRODUCTS
+from bot.dialogs.states import DeliverySG, PaymentSG, ProductSG
 
 
 async def set_post(_, __, manager: DialogManager):
     manager.dialog_data["delivery_method"] = "Почта"
-    await manager.switch_to(DeliverySG.delivery_input)
+    manager.dialog_data.update({"full_name": "", "phone": "", "address": ""})
+    await manager.switch_to(DeliverySG.full_name_input)
 
 
 async def set_cdek(_, __, manager: DialogManager):
     manager.dialog_data["delivery_method"] = "СДЭК"
-    await manager.switch_to(DeliverySG.delivery_input)
+    manager.dialog_data.update({"full_name": "", "phone": "", "address": ""})
+    await manager.switch_to(DeliverySG.full_name_input)
 
 
 async def back_to_product(_, __, manager: DialogManager):
@@ -29,18 +26,51 @@ async def back_delivery(_, __, manager: DialogManager):
     await manager.switch_to(DeliverySG.delivery)
 
 
+async def to_phone_input(_, __, manager: DialogManager):
+    await manager.switch_to(DeliverySG.phone_input)
+
+
+async def to_full_name_input(_, __, manager: DialogManager):
+    await manager.switch_to(DeliverySG.full_name_input)
+
+
+async def to_address_input(_, __, manager: DialogManager):
+    await manager.switch_to(DeliverySG.address_input)
+
+
+async def to_full_name_confirm(_, __, manager: DialogManager):
+    await manager.switch_to(DeliverySG.full_name_confirm)
+
+async def to_phone_confirm(_, __, manager: DialogManager):
+    await manager.switch_to(DeliverySG.phone_confirm)
+
+
+async def to_payment(_, __, manager: DialogManager):
+    await manager.start(
+        PaymentSG.payment,
+        data={
+            "product_id": manager.start_data.get("product_id"),
+            "delivery_method": manager.dialog_data.get("delivery_method"),
+            "delivery_data": (
+                f"ФИО: {manager.dialog_data.get('full_name', '')}\n"
+                f"Телефон: {manager.dialog_data.get('phone', '')}\n"
+                f"Адрес: {manager.dialog_data.get('address', '')}"
+            ),
+        },
+    )
+
+
 async def delivery_getter(dialog_manager: DialogManager, **_kwargs):
     product_id = dialog_manager.start_data.get("product_id")
     product = next((p for p in PRODUCTS["bracelets"] if p["id"] == product_id), None)
     product_name = product["name"] if product is not None else "выбранный товар"
-    return {"delivery_choice_text": DELIVERY_CHOICE_TEXT.format(product_name=product_name)}
-
-
-async def delivery_input_getter(dialog_manager: DialogManager, **_kwargs):
-    delivery_method = dialog_manager.dialog_data.get("delivery_method")
-    if delivery_method == "СДЭК":
-        return {"delivery_input_text": DELIVERY_CDEK_INPUT_TEXT}
-    return {"delivery_input_text": DELIVERY_POST_INPUT_TEXT}
+    return {
+        "delivery_choice_text": DELIVERY_CHOICE_TEXT.format(product_name=product_name),
+        "full_name": dialog_manager.dialog_data.get("full_name", ""),
+        "phone": dialog_manager.dialog_data.get("phone", ""),
+        "address": dialog_manager.dialog_data.get("address", ""),
+        "delivery_method": dialog_manager.dialog_data.get("delivery_method", ""),
+    }
 
 
 delivery_dialog = Dialog(
@@ -53,9 +83,42 @@ delivery_dialog = Dialog(
         getter=delivery_getter,
     ),
     Window(
-        Format("{delivery_input_text}"),
+        Const("Введите ФИО получателя:"),
         Button(Const("назад"), id="back_delivery", on_click=back_delivery),
-        state=DeliverySG.delivery_input,
-        getter=delivery_input_getter,
+        state=DeliverySG.full_name_input,
+    ),
+    Window(
+        Format("Вы ввели ФИО: \"{full_name}\"\nВсе верно?"),
+        Button(Const("Да"), id="full_name_yes", on_click=to_phone_input),
+        Button(Const("Нет"), id="full_name_no", on_click=to_full_name_input),
+        Button(Const("назад"), id="back_delivery_2", on_click=back_delivery),
+        state=DeliverySG.full_name_confirm,
+        getter=delivery_getter,
+    ),
+    Window(
+        Const("Введите телефон (допустимы цифры и символ +):"),
+        Button(Const("назад"), id="back_full_name_confirm", on_click=to_full_name_confirm),
+        state=DeliverySG.phone_input,
+    ),
+    Window(
+        Format("Вы ввели телефон: \"{phone}\"\nВсе верно?"),
+        Button(Const("Да"), id="phone_yes", on_click=to_address_input),
+        Button(Const("Нет"), id="phone_no", on_click=to_phone_input),
+        Button(Const("назад"), id="back_phone_confirm", on_click=to_full_name_confirm),
+        state=DeliverySG.phone_confirm,
+        getter=delivery_getter,
+    ),
+    Window(
+        Const("Введите адрес (Индекс, Город, Улица, Дом, Квартира). Для СДЭК можно указать ПВЗ."),
+        Button(Const("назад"), id="back_phone", on_click=to_phone_confirm),
+        state=DeliverySG.address_input,
+    ),
+    Window(
+        Format("Способ доставки: {delivery_method}\nВы ввели адрес: \"{address}\"\nВсе верно?"),
+        Button(Const("Да"), id="address_yes", on_click=to_payment),
+        Button(Const("Нет"), id="address_no", on_click=to_address_input),
+        Button(Const("назад"), id="back_address_confirm", on_click=to_phone_confirm),
+        state=DeliverySG.address_confirm,
+        getter=delivery_getter,
     ),
 )
