@@ -54,13 +54,13 @@ def _build_order(manager: DialogManager, payment_type: str) -> Order:
     )
 
 
-async def process_payment_card(_, __, manager: DialogManager):
+async def process_order_confirm(_, __, manager: DialogManager):
     if order_service is None:
         await manager.event.answer("Ошибка сервиса заказа. Попробуйте позже.")
         return
 
     try:
-        order = _build_order(manager, "Картой")
+        order = _build_order(manager, "Оплата отключена")
         order_service.create_order(order)
         if notification_service is not None:
             await notification_service.send_order_notification(manager.event.bot, order)
@@ -68,25 +68,6 @@ async def process_payment_card(_, __, manager: DialogManager):
         await manager.event.answer("Не удалось сохранить заказ. Проверьте данные и попробуйте снова.")
         return
 
-    await manager.event.answer("Ждем подключения Yookassa)")
-    await manager.switch_to(PaymentSG.done)
-
-
-async def process_payment_sbp(_, __, manager: DialogManager):
-    if order_service is None:
-        await manager.event.answer("Ошибка сервиса заказа. Попробуйте позже.")
-        return
-
-    try:
-        order = _build_order(manager, "Сбп")
-        order_service.create_order(order)
-        if notification_service is not None:
-            await notification_service.send_order_notification(manager.event.bot, order)
-    except Exception:
-        await manager.event.answer("Не удалось сохранить заказ. Проверьте данные и попробуйте снова.")
-        return
-
-    await manager.event.answer("Ждем подключения Yookassa)")
     await manager.switch_to(PaymentSG.done)
 
 
@@ -100,14 +81,15 @@ async def to_start(_, __, manager: DialogManager):
 
 payment_dialog = Dialog(
     Window(
-        Const("Проверьте Данные И Выберите Способ Оплаты:"),
-        Button(Const("Картой"), id="pay_card", on_click=process_payment_card),
-        Button(Const("Сбп"), id="pay_sbp", on_click=process_payment_sbp),
+        Const("Проверьте данные и подтвердите заказ:"),
+        Button(Const("Оформить заказ"), id="confirm_order", on_click=process_order_confirm),
         Button(Const("Назад"), id="back_delivery_input", on_click=back_to_delivery_input),
         state=PaymentSG.payment,
     ),
     Window(
-        Const("Заказ Создан 💖\nМы Свяжемся С Вами После Подключения Оплаты."),
+        Const(
+            "Поздравляю 💖✨с покупкой, скоро твой браслет отправиться к тебе! Как только заказ будет зарегистрирован, тебе придет трек номер. Хорошего тебе дня🙏🏻"
+        ),
         Button(Const("Назад"), id="back_start", on_click=to_start),
         state=PaymentSG.done,
     ),
