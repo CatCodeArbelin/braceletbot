@@ -24,7 +24,7 @@ class NotificationService:
         return (
             "Новый заказ 💖\n\n"
             "Пользователь:\n"
-            f"• ID: {order.user_id}\n"
+            f"• Telegram ID: {order.user_id}\n"
             f"• Username: {username}\n"
             f"• Имя: {first_name}\n\n"
             "Товар:\n"
