@@ -82,32 +82,26 @@ async def to_payment(_, __, manager: DialogManager):
 
 
 async def confirm_full_name_yes(_, __, manager: DialogManager):
-    await manager.event.answer("Подтвердить ФИО и перейти к вводу телефона?", show_alert=True)
     await manager.switch_to(DeliverySG.phone_input)
 
 
 async def confirm_full_name_no(_, __, manager: DialogManager):
-    await manager.event.answer("Вернуться к редактированию ФИО?", show_alert=True)
     await manager.switch_to(DeliverySG.full_name_input)
 
 
 async def confirm_phone_yes(_, __, manager: DialogManager):
-    await manager.event.answer("Подтвердить телефон и перейти к вводу адреса?", show_alert=True)
     await manager.switch_to(DeliverySG.address_input)
 
 
 async def confirm_phone_no(_, __, manager: DialogManager):
-    await manager.event.answer("Вернуться к редактированию телефона?", show_alert=True)
     await manager.switch_to(DeliverySG.phone_input)
 
 
 async def confirm_address_yes(_, __, manager: DialogManager):
-    await manager.event.answer("Подтвердить адрес и перейти к оплате?", show_alert=True)
     await to_payment(_, __, manager)
 
 
 async def confirm_address_no(_, __, manager: DialogManager):
-    await manager.event.answer("Вернуться к редактированию адреса?", show_alert=True)
     await manager.switch_to(DeliverySG.address_input)
 
 
