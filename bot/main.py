@@ -42,7 +42,7 @@ async def main():
 
     db = SQLiteDatabase()
     order_service = OrderService(db)
-    notification_service = NotificationService(-670831477)
+    notification_service = NotificationService(settings.admin_chat_id)
     set_order_service(order_service)
     set_notification_service(notification_service)
 
