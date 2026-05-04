@@ -12,6 +12,7 @@ class CatalogSG(StatesGroup):
 
 class ProductSG(StatesGroup):
     product = State()
+    product_photo_2 = State()
 
 
 class DeliverySG(StatesGroup):
