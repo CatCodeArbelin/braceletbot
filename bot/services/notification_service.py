@@ -50,4 +50,8 @@ class NotificationService:
                 text=self.format_order_message(order),
             )
         except Exception:
-            logging.exception("Не удалось отправить уведомление администратору")
+            logging.exception(
+                "Не удалось отправить уведомление администратору (admin_chat_id=%s, order_user_id=%s)",
+                self.admin_chat_id,
+                order.user_id,
+            )

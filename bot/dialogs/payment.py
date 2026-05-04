@@ -55,15 +55,14 @@ def _build_order(manager: DialogManager, payment_type: str) -> Order:
 
 
 async def process_order_confirm(_, __, manager: DialogManager):
-    if order_service is None:
+    if order_service is None or notification_service is None:
         await manager.event.answer("Ошибка сервиса заказа. Попробуйте позже.")
         return
 
     try:
         order = _build_order(manager, "Оплата отключена")
         order_service.create_order(order)
-        if notification_service is not None:
-            await notification_service.send_order_notification(manager.event.bot, order)
+        await notification_service.send_order_notification(manager.event.bot, order)
     except Exception:
         await manager.event.answer("Не удалось сохранить заказ. Проверьте данные и попробуйте снова.")
         return
