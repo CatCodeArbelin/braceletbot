@@ -32,7 +32,7 @@ catalog_dialog = Dialog(
         Button(Const(_product_name(0)), id="p0", on_click=open_product_0),
         Button(Const(_product_name(1)), id="p1", on_click=open_product_1),
         Button(Const(_product_name(2)), id="p2", on_click=open_product_2),
-        Button(Const("назад"), id="back_main", on_click=back_to_main),
+        Button(Const("Назад"), id="back_main", on_click=back_to_main),
         state=CatalogSG.catalog,
     )
 )

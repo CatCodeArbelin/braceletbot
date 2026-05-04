@@ -32,14 +32,13 @@ main_menu_dialog = Dialog(
     Window(
         Format(TEXTS["start"]),
         StaticMedia(path="bot/dialogs/Ava.jpg", type="photo"),
-        Button(Const("браслеты✨"), id="bracelets", on_click=on_bracelets_click),
-        Button(Const("чокеры✨"), id="chokers", on_click=on_chokers_click),
+        Button(Const("Браслеты ✨"), id="bracelets", on_click=on_bracelets_click),
         state=MainMenuSG.start,
         getter=start_getter,
     ),
     Window(
-        Const(TEXTS["chokers_stub"]),
-        Button(Const("назад"), id="back_stub", on_click=on_back_from_stub),
+        Const("Чокеры Скоро Появятся ✨\nПока Что Доступны Только Браслеты 💖"),
+        Button(Const("Назад"), id="back_stub", on_click=on_back_from_stub),
         state=MainMenuSG.chokers_stub,
     ),
 )
