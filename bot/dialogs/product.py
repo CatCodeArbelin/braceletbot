@@ -22,7 +22,7 @@ async def product_getter(dialog_manager: DialogManager, **_):
             price_old=_format_price(product["price_old"]),
             price_new=_format_price(product["price_new"]),
             description=product["description"],
-        )
+        ),
     }
 
 
@@ -34,14 +34,31 @@ async def back_to_catalog(_, __, manager: DialogManager):
     await manager.start(CatalogSG.catalog)
 
 
+async def show_photo_2(_, __, manager: DialogManager):
+    await manager.switch_to(ProductSG.product_photo_2)
+
+
+async def show_photo_1(_, __, manager: DialogManager):
+    await manager.switch_to(ProductSG.product)
+
+
 product_dialog = Dialog(
     Window(
-        Format("{card}"),
+        Format("{card}\n\nФото 1/2"),
         StaticMedia(path=Format("{photo_1}"), type="photo"),
-        StaticMedia(path=Format("{photo_2}"), type="photo"),
+        Button(Format("следующее фото ▶️"), id="next_photo", on_click=show_photo_2),
         Button(Format("заказать"), id="order", on_click=to_delivery),
         Button(Format("назад"), id="back_catalog", on_click=back_to_catalog),
         state=ProductSG.product,
         getter=product_getter,
-    )
+    ),
+    Window(
+        Format("{card}\n\nФото 2/2"),
+        StaticMedia(path=Format("{photo_2}"), type="photo"),
+        Button(Format("◀️ предыдущее фото"), id="prev_photo", on_click=show_photo_1),
+        Button(Format("заказать"), id="order_2", on_click=to_delivery),
+        Button(Format("назад"), id="back_catalog_2", on_click=back_to_catalog),
+        state=ProductSG.product_photo_2,
+        getter=product_getter,
+    ),
 )
