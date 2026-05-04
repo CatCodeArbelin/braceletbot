@@ -34,7 +34,7 @@ async def set_post(_, __, manager: DialogManager):
 
 
 async def set_cdek(_, __, manager: DialogManager):
-    manager.dialog_data["delivery_method"] = "СДЭК"
+    manager.dialog_data["delivery_method"] = "Сдэк"
     manager.dialog_data.update({"full_name": "", "phone": "", "address": ""})
     await manager.switch_to(DeliverySG.full_name_input)
 
@@ -128,50 +128,50 @@ delivery_dialog = Dialog(
     Window(
         Format("{delivery_choice_text}"),
         Button(Const("Почта"), id="delivery_post", on_click=set_post),
-        Button(Const("СДЭК"), id="delivery_cdek", on_click=set_cdek),
-        Button(Const("назад"), id="back_product", on_click=back_to_product),
+        Button(Const("Сдэк"), id="delivery_cdek", on_click=set_cdek),
+        Button(Const("Назад"), id="back_product", on_click=back_to_product),
         state=DeliverySG.delivery,
         getter=delivery_getter,
     ),
     Window(
-        Const("Введите ФИО получателя:"),
+        Const("Введите Ф.И.О. Получателя:"),
         MessageInput(on_full_name_input),
-        Button(Const("назад"), id="back_delivery", on_click=back_delivery),
+        Button(Const("Назад"), id="back_delivery", on_click=back_delivery),
         state=DeliverySG.full_name_input,
     ),
     Window(
-        Format("Вы ввели ФИО: \"{full_name}\"\nВсе верно?"),
+        Format("Вы Ввели Ф.И.О.: \"{full_name}\"\nВсе Верно?"),
         Button(Const("Подтвердить (Да)"), id="full_name_yes", on_click=confirm_full_name_yes),
-        Button(Const("Нет, изменить"), id="full_name_no", on_click=confirm_full_name_no),
-        Button(Const("назад"), id="back_delivery_2", on_click=back_delivery),
+        Button(Const("Нет, Изменить"), id="full_name_no", on_click=confirm_full_name_no),
+        Button(Const("Назад"), id="back_delivery_2", on_click=back_delivery),
         state=DeliverySG.full_name_confirm,
         getter=delivery_getter,
     ),
     Window(
-        Const("Введите телефон (допустимы цифры и символ +):"),
+        Const("Введите Телефон (Допустимы Цифры И Символ +):"),
         MessageInput(on_phone_input),
-        Button(Const("назад"), id="back_full_name_confirm", on_click=to_full_name_confirm),
+        Button(Const("Назад"), id="back_full_name_confirm", on_click=to_full_name_confirm),
         state=DeliverySG.phone_input,
     ),
     Window(
-        Format("Вы ввели телефон: \"{phone}\"\nВсе верно?"),
+        Format("Вы Ввели Телефон: \"{phone}\"\nВсе Верно?"),
         Button(Const("Подтвердить (Да)"), id="phone_yes", on_click=confirm_phone_yes),
-        Button(Const("Нет, изменить"), id="phone_no", on_click=confirm_phone_no),
-        Button(Const("назад"), id="back_phone_confirm", on_click=to_full_name_confirm),
+        Button(Const("Нет, Изменить"), id="phone_no", on_click=confirm_phone_no),
+        Button(Const("Назад"), id="back_phone_confirm", on_click=to_full_name_confirm),
         state=DeliverySG.phone_confirm,
         getter=delivery_getter,
     ),
     Window(
-        Const("Введите адрес (Индекс, Город, Улица, Дом, Квартира). Для СДЭК можно указать ПВЗ."),
+        Const("Введите Адрес (Индекс, Город, Улица, Дом, Квартира). Для Сдэк Можно Указать ПВЗ."),
         MessageInput(on_address_input),
-        Button(Const("назад"), id="back_phone", on_click=to_phone_confirm),
+        Button(Const("Назад"), id="back_phone", on_click=to_phone_confirm),
         state=DeliverySG.address_input,
     ),
     Window(
-        Format("Способ доставки: {delivery_method}\nВы ввели адрес: \"{address}\"\nВсе верно?"),
+        Format("Способ Доставки: {delivery_method}\nВы Ввели Адрес: \"{address}\"\nВсе Верно?"),
         Button(Const("Подтвердить (Да)"), id="address_yes", on_click=confirm_address_yes),
-        Button(Const("Нет, изменить"), id="address_no", on_click=confirm_address_no),
-        Button(Const("назад"), id="back_address_confirm", on_click=to_phone_confirm),
+        Button(Const("Нет, Изменить"), id="address_no", on_click=confirm_address_no),
+        Button(Const("Назад"), id="back_address_confirm", on_click=to_phone_confirm),
         state=DeliverySG.address_confirm,
         getter=delivery_getter,
     ),
