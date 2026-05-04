@@ -4,7 +4,7 @@ from aiogram_dialog import Dialog, DialogManager, Window
 from aiogram_dialog.widgets.kbd import Button
 from aiogram_dialog.widgets.text import Const
 
-from bot.config import PRODUCTS, TEXTS
+from bot.config import PRODUCTS
 from bot.dialogs.states import DeliverySG, MainMenuSG, PaymentSG
 from bot.models import Order
 from bot.services.notification_service import NotificationService
@@ -54,13 +54,13 @@ def _build_order(manager: DialogManager, payment_type: str) -> Order:
     )
 
 
-async def _save_and_finish(manager: DialogManager, payment_type: str) -> None:
+async def process_payment(_, __, manager: DialogManager):
     if order_service is None:
         await manager.event.answer("Ошибка сервиса заказа. Попробуйте позже.")
         return
 
     try:
-        order = _build_order(manager, payment_type)
+        order = _build_order(manager, "YooKassa (заглушка)")
         order_service.create_order(order)
         if notification_service is not None:
             await notification_service.send_order_notification(manager.event.bot, order)
@@ -68,20 +68,12 @@ async def _save_and_finish(manager: DialogManager, payment_type: str) -> None:
         await manager.event.answer("Не удалось сохранить заказ. Проверьте данные и попробуйте снова.")
         return
 
-    manager.dialog_data["payment_method"] = payment_type
+    await manager.event.answer("Ждем подключения Yookassa)")
     await manager.switch_to(PaymentSG.done)
 
 
-async def set_card(_, __, manager: DialogManager):
-    await _save_and_finish(manager, "Картой")
-
-
-async def set_sbp(_, __, manager: DialogManager):
-    await _save_and_finish(manager, "СБП")
-
-
 async def back_to_delivery_input(_, __, manager: DialogManager):
-    await manager.start(DeliverySG.delivery_input, data={"product_id": manager.start_data.get("product_id")})
+    await manager.start(DeliverySG.full_name_input, data={"product_id": manager.start_data.get("product_id")})
 
 
 async def to_start(_, __, manager: DialogManager):
@@ -90,14 +82,13 @@ async def to_start(_, __, manager: DialogManager):
 
 payment_dialog = Dialog(
     Window(
-        Const(TEXTS["choose_payment"]),
-        Button(Const("Картой"), id="pay_card", on_click=set_card),
-        Button(Const("СБП"), id="pay_sbp", on_click=set_sbp),
+        Const("Проверьте данные и нажмите кнопку оплаты:"),
+        Button(Const("Оплатить"), id="pay", on_click=process_payment),
         Button(Const("Назад"), id="back_delivery_input", on_click=back_to_delivery_input),
         state=PaymentSG.payment,
     ),
     Window(
-        Const(TEXTS["order_done"]),
+        Const("Заказ создан. Мы свяжемся с вами после подключения оплаты 💖"),
         Button(Const("Вернуться в начало"), id="back_start", on_click=to_start),
         state=PaymentSG.done,
     ),

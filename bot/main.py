@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import re
 
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.filters import CommandStart
@@ -16,36 +17,41 @@ from bot.dialogs import (
     product_dialog,
 )
 from bot.dialogs.payment import set_notification_service, set_order_service
-from bot.dialogs.states import DeliverySG, MainMenuSG, PaymentSG
+from bot.dialogs.states import DeliverySG, MainMenuSG
 from bot.services.notification_service import NotificationService
 from bot.services.order_service import OrderService
 
+PHONE_PATTERN = re.compile(r"^\+?[0-9]+$")
+
 
 async def start_handler(message: Message, dialog_manager: DialogManager):
-    # Запускаем диалог с главного меню.
     await dialog_manager.start(MainMenuSG.start)
 
 
-async def delivery_input_handler(message: Message, dialog_manager: DialogManager):
-    # Сохраняем данные доставки и переводим пользователя к оплате.
-    dialog_manager.dialog_data["delivery_data"] = message.text or ""
-    await dialog_manager.start(
-        PaymentSG.payment,
-        data={
-            "product_id": dialog_manager.start_data.get("product_id"),
-            "delivery_method": dialog_manager.dialog_data.get("delivery_method"),
-            "delivery_data": dialog_manager.dialog_data.get("delivery_data"),
-        },
-    )
+async def full_name_input_handler(message: Message, dialog_manager: DialogManager):
+    dialog_manager.dialog_data["full_name"] = (message.text or "").strip()
+    await dialog_manager.switch_to(DeliverySG.full_name_confirm)
+
+
+async def phone_input_handler(message: Message, dialog_manager: DialogManager):
+    phone = (message.text or "").strip()
+    if not PHONE_PATTERN.match(phone):
+        await message.answer("Телефон может содержать только цифры и символ +. Попробуйте еще раз.")
+        return
+    dialog_manager.dialog_data["phone"] = phone
+    await dialog_manager.switch_to(DeliverySG.phone_confirm)
+
+
+async def address_input_handler(message: Message, dialog_manager: DialogManager):
+    dialog_manager.dialog_data["address"] = (message.text or "").strip()
+    await dialog_manager.switch_to(DeliverySG.address_confirm)
 
 
 async def fallback_handler(message: Message):
-    # Отвечаем на неизвестные сообщения дружелюбной подсказкой.
     await message.answer(TEXTS["unknown"])
 
 
 async def main():
-    # Инициализируем основные компоненты бота.
     logging.basicConfig(level=logging.INFO)
     settings = load_settings()
 
@@ -55,12 +61,14 @@ async def main():
 
     db = SQLiteDatabase()
     order_service = OrderService(db)
-    notification_service = NotificationService(settings.admin_chat_id)
+    notification_service = NotificationService(-670831477)
     set_order_service(order_service)
     set_notification_service(notification_service)
 
     router.message.register(start_handler, CommandStart())
-    router.message.register(delivery_input_handler, DeliverySG.delivery_input, F.text)
+    router.message.register(full_name_input_handler, DeliverySG.full_name_input, F.text)
+    router.message.register(phone_input_handler, DeliverySG.phone_input, F.text)
+    router.message.register(address_input_handler, DeliverySG.address_input, F.text)
     router.message.register(fallback_handler)
 
     dp.include_router(router)

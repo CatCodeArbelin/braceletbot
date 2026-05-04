@@ -17,7 +17,12 @@ class ProductSG(StatesGroup):
 
 class DeliverySG(StatesGroup):
     delivery = State()
-    delivery_input = State()
+    full_name_input = State()
+    full_name_confirm = State()
+    phone_input = State()
+    phone_confirm = State()
+    address_input = State()
+    address_confirm = State()
 
 
 class PaymentSG(StatesGroup):
