@@ -1,10 +1,31 @@
 from aiogram_dialog import Dialog, DialogManager, Window
+from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import Button
 from aiogram_dialog.widgets.text import Const, Format
 
 from bot.config import DELIVERY_CHOICE_TEXT, PRODUCTS
 from bot.dialogs.states import DeliverySG, PaymentSG, ProductSG
 
+
+
+
+async def on_full_name_input(message, _widget, manager: DialogManager):
+    manager.dialog_data["full_name"] = (message.text or "").strip()
+    await manager.switch_to(DeliverySG.full_name_confirm)
+
+
+async def on_phone_input(message, _widget, manager: DialogManager):
+    phone = (message.text or "").strip()
+    if not phone or any(not (ch.isdigit() or ch == "+") for ch in phone):
+        await message.answer("Телефон может содержать только цифры и символ +. Попробуйте еще раз.")
+        return
+    manager.dialog_data["phone"] = phone
+    await manager.switch_to(DeliverySG.phone_confirm)
+
+
+async def on_address_input(message, _widget, manager: DialogManager):
+    manager.dialog_data["address"] = (message.text or "").strip()
+    await manager.switch_to(DeliverySG.address_confirm)
 
 async def set_post(_, __, manager: DialogManager):
     manager.dialog_data["delivery_method"] = "Почта"
@@ -84,6 +105,7 @@ delivery_dialog = Dialog(
     ),
     Window(
         Const("Введите ФИО получателя:"),
+        MessageInput(on_full_name_input),
         Button(Const("назад"), id="back_delivery", on_click=back_delivery),
         state=DeliverySG.full_name_input,
     ),
@@ -97,6 +119,7 @@ delivery_dialog = Dialog(
     ),
     Window(
         Const("Введите телефон (допустимы цифры и символ +):"),
+        MessageInput(on_phone_input),
         Button(Const("назад"), id="back_full_name_confirm", on_click=to_full_name_confirm),
         state=DeliverySG.phone_input,
     ),
@@ -110,6 +133,7 @@ delivery_dialog = Dialog(
     ),
     Window(
         Const("Введите адрес (Индекс, Город, Улица, Дом, Квартира). Для СДЭК можно указать ПВЗ."),
+        MessageInput(on_address_input),
         Button(Const("назад"), id="back_phone", on_click=to_phone_confirm),
         state=DeliverySG.address_input,
     ),
